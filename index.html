@@ -4,10 +4,85 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <Link rel = "stylesheet" href = "bootstrap.css"></Link>
-    <title
-    >Document</title>
+    <Link rel = "stylesheet" href = "style.css"></Link>
+    <title>LootShop</title>
+    <!-- Spara den som `logo.svg` i projektmappen. I navbar:en länkar du den så här:
+```
+img src="logo.svg"  alt="LootShop"  height="60"... -->
 </head>
 <body>
+    <nav class='navbar navbar-dark bg-dark px-3'>
+        <img src='logo.svg' alt='LootShop' height='60'>
+        <button id = 'openCart' class='btn btn-outline-light position-relative'>
+            Varukorg
+            <span id = 'cartCount' class = 'badge rounded-pill bg-danger'>0</span>
+        </button>
+    </nav>
+
+    <div>
+        <img src="logo.svg" alt="LootShop" height="200" class="d-block mx-auto my-4">
+    </div>
+
+   <main class = 'container my-4'></main>
+    <div class = 'row row-cols-1 row- cols-sm2 row-cols-md3 row-cols-lg4' id = 'products'></div>        
+    </main>
+
+    <div class ='offcanvas offcanvas-end' id='cartPanel'>
+        <div class ='offcanvas-header'>
+            <h5>Varukorg </h5>
+            <button class = 'btn-close' data-bs-dismiss = 'offcanvas'></button>
+       </div>
+       <div class ='offcanvas-body'>
+        <div id='cartItem'></div>
+        <p> Totalt: <span id='cartTotal'>0</span> kr </p>
+        <button id = 'clearCart' class='btn btn-danger'>Töm varukorg</button>
+        <button id = 'checkout' class='btn btn-success'>Gå till kassan</button>    
+       </div>
+    </div>
+
+    <div class = 'modal' id = 'orderModal'>
+        <div class= 'modal-dialog'>
+            <div class='modal-content'>
+                <div class='modal-header'>
+                    Beställning
+                </div>
+                <div class='modal-body'>
+                    <div class = 'container'>
+                        <form novalidate>
+                            <div class = 'mb-3'>
+                                <label for='name' class='form-label'>Namn</label>
+                                <input type='text' class='form-control' id='name' required>
+                                <div class='invalid-feedback'>Vänligen ange ditt namn.</div>
+                            </div>
+                            <div class = 'mb-3'>
+                                <label for='address' class='form-label'>Adress</label>
+                                <input type='text' class='form-control' id='address' required>
+                                <div class='invalid-feedback'>Vänligen ange din adress.</div>
+                            </div>
+                            <div>
+                                <label for='postal' class='form-label'>Postnummer</label>
+                                <input type='text' class='form-control' id='postal' required pattern='\d{5}'>
+                                <div class='invalid-feedback'>Vänligen ange ett giltigt postnummer (5 siffror).</div>
+                            </div>
+                            <div>
+                                <label for='city' class='form-label'>Stad</label>
+                                <input type='text' class='form-control' id='city' required>
+                                <div class='invalid-feedback'>Vänligen ange din stad.</div>
+                            </div>
+                            <div class = 'mb-3'>
+                                <label for='email' class='form-label'>E-post</label>
+                                <input type='email' class='form-control' id='email' required>
+                                <div class='invalid-feedback'>Vänligen ange en giltig e-postadress.</div>
+                            </div>
+                            <button type = 'submit' class = 'btn btn-primary'>Bekräfta beställning</button>
+                        </form>  
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src='bootstrap.bundle.min.js'></script>
+    <script src='script.js'></script>
     
 </body>
 </html>
