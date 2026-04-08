@@ -1,13 +1,20 @@
-fetch('https://dummyjson.com/products')
-  .then(response => response.json())
-  .then(data => {
-    const products = data.products;
-  
-    const container = document.getElementById('products');
+const categories = ['smartphones', 'laptops', 'tablets', 'mobile-accessories']
+const container = document.getElementById('products');
     
 
+Promise.all(
+  categories.map(category =>
+    fetch(`https://dummyjson.com/products/category/${category}`)
+    .then(res => res.json())
+  )
+)
+.then(results => {
+  const products = [];
+  results.forEach(data => {
+    data.products.forEach(p => products.push(p));
+  });
 
-    products.forEach(product => {
+  products.forEach(product => {
       const div = document.createElement('div');
       div.className = 'col';
       div.innerHTML = `
@@ -66,6 +73,7 @@ fetch('https://dummyjson.com/products')
   .catch(error => {
     console.error('Something went wrong:', error);
   });
+   
 
 function getCart() {
     let data = localStorage.getItem('cart');
@@ -144,10 +152,23 @@ function updateCartUI() {
             <span>${item.title}</span>
             <span>${item.price} USD</span>
             <span>Quantity: ${item.quantity}</span>
+           
             <button class="btn btn-sm btn-secondary increase" data-id="${item.id}">+</button>
             <button class="btn btn-sm btn-secondary decrease" data-id="${item.id}">-</button>
             <button class="btn btn-sm btn-danger remove" data-id="${item.id}">Ta bort</button>
         `;
+
+        const increaseBtn = div.querySelector('.increase');
+          increaseBtn.addEventListener('click', () => increaseQuantity(item.id));
+        
+        const decreaseBtn = div.querySelector('.decrease');
+          decreaseBtn.addEventListener('click', () => decreaseQuantity(item.id));
+
+        const removeBtn = div.querySelector('.remove');
+          removeBtn.addEventListener('click', () => removeItem(item.id));
+
+
+
         cartItemContainer.appendChild(div);
          totalSum += item.price * item.quantity;
     });
@@ -158,9 +179,90 @@ function updateCartUI() {
 
 const openCart = document.getElementById('openCart');
 const cartPanel = document.getElementById('cartPanel');
+
+
 const offcanvas = new bootstrap.Offcanvas(cartPanel);
+openCart.addEventListener('click', () => offcanvas.show());
 
-openCart.addEventListener('click', () =>{
-  offcanvas.show();
-})
+const checkout = new bootstrap.Modal(document.getElementById('orderModal'));
+document.getElementById('checkout').addEventListener('click', () => {
+    const fields = ['name', 'email', 'phone', 'address', 'postal', 'city'];
+    fields.forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.remove('is-invalid', 'is-valid');
+    });
+    document.getElementById('orderConfirmation').classList.add('d-none');
+    checkout.show();
+});
 
+''
+document.getElementById('clearCart').addEventListener('click', () => clearCart());
+
+document.addEventListener('DOMContentLoaded', () => updateCartUI());
+
+
+
+
+function formValidation() {
+  
+  const form = document.querySelector("form");
+
+  const name = document.getElementById('name');
+  const address = document.getElementById('address')
+  const postal = document.getElementById('postal')
+  const city = document.getElementById('city')
+  const email = document.getElementById('email')
+  const phone = document.getElementById('phone')
+
+  name.addEventListener ('input', () => validateField(name, 2, 50, null));
+  address.addEventListener ('input', () => validateField(address, 2, 50, null));
+  postal.addEventListener ('input', () => validateField(postal, 5, 5, /^[0-9]{5}$/));
+  city.addEventListener ('input', () => validateField(city, 2, 50, null));
+  email.addEventListener ('input', () => validateField(email, 1, 50, /@/));
+  phone.addEventListener ('input', () => validateField(phone, 1, 20, /^[0-9()\-]+$/));
+
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+
+    const isValid = validateField(name, 2, 50, null) &
+    validateField(address, 2, 50, null) &
+    validateField(postal, 5, 5, /^[0-9]{5}$/) &
+    validateField(city, 2, 50, null) &
+    validateField(email, 1, 50, /@/) &
+    validateField(phone, 1, 20, /^[0-9()\-]+$/);
+
+    if (isValid){
+      document.getElementById('orderConfirmation').classList.remove('d-none');
+      clearCart();
+      form.reset();
+      setTimeout(() => { checkout.hide();}, 7000);
+    }
+
+    setTimeout(() => {
+    document.getElementById('orderConfirmation').classList.add('d-none');
+}, 4000);
+  });
+
+}
+
+formValidation();
+
+function validateField (field, minLength, maxLength, regex) {
+  value = field.value.trim();
+
+  if (value.length < minLength || value.length > maxLength){
+    field.classList.add('is-invalid');
+    field.classList.remove('is-valid');
+    return false;
+  }
+
+  if (regex && !regex.test(value)) {
+    field.classList.add('is-invalid');
+    field.classList.remove('is-valid')
+    return false;
+  }
+
+  field.classList.add('is-valid');
+  field.classList.remove('is-invalid');
+  return true;
+}
