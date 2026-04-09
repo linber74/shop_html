@@ -144,18 +144,23 @@ function updateCartUI() {
 
     cart.forEach( item => {
         const div = document.createElement('div');
-        div.className = 'cart-item';
+        div.className = 'card p-2 mb-2';
         div.innerHTML = `
+          <div class "d-flex align-items-center gap-2">   
             <img src="${item.image}" alt="${item.title}" 
               style="width: 50px; height: 50px; object-fit: contain;"
               onerror="this.style.display='none">
-            <span>${item.title}</span>
-            <span>${item.price} USD</span>
-            <span>Quantity: ${item.quantity}</span>
-           
+            <div>
+              <div class = "fw-bold">${item.title}</div>
+              <div class = "text-muted">${item.price} USD</div>
+              <div> Antal: ${item.quantity}</div>
+            </div>
+          </div>
+          <div class = "d-flex gap-2 mt-2">
             <button class="btn btn-sm btn-secondary increase" data-id="${item.id}">+</button>
             <button class="btn btn-sm btn-secondary decrease" data-id="${item.id}">-</button>
             <button class="btn btn-sm btn-danger remove" data-id="${item.id}">Ta bort</button>
+          </div>
         `;
 
         const increaseBtn = div.querySelector('.increase');
@@ -175,6 +180,13 @@ function updateCartUI() {
 
     document.getElementById('cartTotal').textContent = totalSum.toFixed(2);
     document.getElementById('cartCount').textContent = cart.length;
+
+    if (cart.length ===0){
+      document.getElementById('checkout').disabled = true;
+    }
+    else{
+      document.getElementById('checkout').disabled = false;
+    }
 }
 
 const openCart = document.getElementById('openCart');
@@ -193,15 +205,12 @@ document.getElementById('checkout').addEventListener('click', () => {
     });
     document.getElementById('orderConfirmation').classList.add('d-none');
     checkout.show();
+
 });
 
-''
 document.getElementById('clearCart').addEventListener('click', () => clearCart());
 
 document.addEventListener('DOMContentLoaded', () => updateCartUI());
-
-
-
 
 function formValidation() {
   
